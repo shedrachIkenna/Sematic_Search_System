@@ -15,9 +15,10 @@ class DocumentIngestion:
             'document': ['.pdf']
         }
 
-        # Flatten all supported file extensions 
+        # All supported file extensions 
         self.all_extensions = []
 
+        # Compile all supported file extentions 
         for category in self.supported_formats.values():
             self.all_extensions.extend(category)
         
