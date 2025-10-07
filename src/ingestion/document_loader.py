@@ -16,10 +16,10 @@ class DocumentIngestion:
         }
 
         # Flatten all supported file extensions 
-        self.all_extentions = []
+        self.all_extensions = []
 
         for category in self.supported_formats.values():
-            self.all_extentions.extend(category)
+            self.all_extensions.extend(category)
         
         # Statistics tracking 
         self.stats = {
