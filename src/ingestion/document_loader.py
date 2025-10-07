@@ -4,6 +4,8 @@ Load documents from various sources and formats
 
 """
 
+from pathlib import Path
+
 
 class DocumentIngestion: 
     def __init__(self):
@@ -29,3 +31,6 @@ class DocumentIngestion:
             'files_failed': 0, 
             'total_size_bytes': 0
         }
+    
+    def is_supported_format(self, file_path: Path) -> bool:
+        
