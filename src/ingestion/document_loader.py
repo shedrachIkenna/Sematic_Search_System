@@ -5,6 +5,7 @@ Load documents from various sources and formats
 """
 
 from pathlib import Path
+from typing import List, Dict, Optional
 
 
 class DocumentIngestion: 
@@ -44,3 +45,21 @@ class DocumentIngestion:
 
         """
         return file_path.suffix.lower() in self.all_extensions
+
+    def get_file_category(self, file_path: Path) -> Optional[str]: 
+        """
+        Determine the category of a file based on its extension 
+
+        Args: 
+            file_path: Path to the file 
+        
+        Returns:
+            str: Category name or None if unsupported 
+
+        """
+
+        ext = file_path.suffix.lower()
+        for category, extensions in self.supported_formats.items():
+            if ext in extensions:
+                return category
+        return None
