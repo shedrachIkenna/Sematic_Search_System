@@ -33,4 +33,14 @@ class DocumentIngestion:
         }
     
     def is_supported_format(self, file_path: Path) -> bool:
+        """
+        Check if a file format is supported 
+
+        Args:
+            file_path: Path to the file 
         
+        Returns: 
+            bool: True if format is supported, False otherwise 
+
+        """
+        return file_path.suffix.lower() in self.all_extensions
