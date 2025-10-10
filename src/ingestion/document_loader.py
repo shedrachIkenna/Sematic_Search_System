@@ -153,5 +153,36 @@ class DocumentIngestion:
             self.stats['files_failed'] += 1
             return None 
         
+    def _read_text_file(self, file_path: Path, verbose: bool = True) -> Optional[str]:
+        """
+        Read content from text-based files with encoding fallback 
+
+        Args: 
+            file_path: Path to the text file 
+            verbose: if True, print status message 
+        
+        Returns: 
+            str: File contents or None if failed 
+        """
+        # Encoding list 
+        encodings = ['utf-8', 'latin-1', 'cp1252', 'iso-8859-1']
+
+        for encoding in encodings:
+            try: 
+                with open(file_path, 'r', encoding=encoding) as f:
+                    content = f.read()
+                return content
+            except UnicodeDecodeError:
+                continue
+            except Exception as e: 
+                if verbose:
+                    print(f"  Error reading with {encoding}: {str(e)}")
+                continue
+        
+        if verbose: 
+            print(f"  Failed to decode file with any encoding")
+        return None 
+    
+    
 
     
