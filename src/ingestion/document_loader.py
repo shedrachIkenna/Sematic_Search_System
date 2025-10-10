@@ -374,5 +374,16 @@ class DocumentIngestion:
 
         return documents
     
+    def get_statistics(self) -> Dict[str, Any]:
+        """Get ingestion statistics"""
+        return self.stats.copy()
     
+    def reset_statistics(self):
+        """Reset statistics counters"""
+        self.stats = {
+            'total_files_found': 0,
+            'files_processed': 0,
+            'files_failed': 0,
+            'total_size_bytes': 0
+        }
     
