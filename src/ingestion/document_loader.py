@@ -268,6 +268,19 @@ class DocumentIngestion:
             print(f"pip install pdfminer.six")
         
         return None 
+    
+    def load_directory(self, directory_path: str, recursive: bool = True, verbose: bool = True) -> List[Dict[str, Any]]:
+        """
+        Load all supported files from a directory 
+
+        Args: 
+            directory_path: Path to the directory 
+            recursive: If True, search subdirectories 
+            verbose: if True, print status messages
+
+        Returns:
+            List of document dictionaries with document metadata 
+        """
         
 
 
