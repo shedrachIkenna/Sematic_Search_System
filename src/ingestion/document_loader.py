@@ -222,4 +222,14 @@ class DocumentIngestion:
                 for page in reader.pages:
                     text += page.extract_text()
 
+                if text.strip():
+                    return text
+        except ImportError: 
+            pass 
+        except Exception as e: 
+            if verbose: 
+                print(f"PyPDF2 failed: {str(e)}")
+        
+        
+
     
