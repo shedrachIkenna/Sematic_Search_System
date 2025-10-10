@@ -213,7 +213,13 @@ class DocumentIngestion:
                 print(f" PyMuPDF failed: {str(e)}")
         
 
-        
-
+        # Method 2 - PyPDF2
+        try: 
+            import PyPDF2 
+            with open(file_path, 'rb') as file:
+                reader = PyPDF2.PdfReader(file)
+                text = ""
+                for page in reader.pages:
+                    text += page.extract_text()
 
     
