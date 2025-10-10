@@ -229,7 +229,25 @@ class DocumentIngestion:
         except Exception as e: 
             if verbose: 
                 print(f"PyPDF2 failed: {str(e)}")
+
+        # Method 3: pdfplumber
+        try:
+            import pdfplumber
+            text = ""
+            with pdfplumber.open(file_path) as pdf:
+                for page in pdf.pages:
+                    page_text = page.extract_text()
+                    if page_text:
+                        text += page_text
+            
+            if text.strip():
+                return text
+        except ImportError:
+            pass
+        except Exception as e:
+            if verbose:
+                print(f"pdfplumber failed: {str(e)}")
         
-        
+
 
     
