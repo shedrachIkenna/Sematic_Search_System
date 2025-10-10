@@ -281,7 +281,66 @@ class DocumentIngestion:
         Returns:
             List of document dictionaries with document metadata 
         """
+        try: 
+            directory = Path(directory_path)
+
+            # Check if directory exists 
+            if not directory.exists():
+                if verbose: 
+                    print(f"Error: Directory not found - {directory}")
+                return []
+            
+            if not directory.is_dir():
+                if verbose: 
+                    print(f"Error: Not a directory - {directory}")
+                return []
+            
+            if verbose: 
+                print(f"\nScanning directory: {directory}")
+                print(f"\nRecursive: {recursive}")
+                print(f"\nSupported formats: {', '.join(self.all_extensions)}")
+                print("-" * 70)
+            
+            # Get the list of all the files and subdirectories in the directory
+            if recursive: 
+                files = list(directory.rglob("*"))
+            else:
+                files = list(directory.glob("*"))
+
+            # filter for files only (not directories)
+            files = [f for f in files if f.is_file()]
+            self.stats['total_files_found'] = len(files)
+
+            if verbose: 
+                print(f"Found {len(files)} files in total")
+            
+            # Select only supported files 
+            supported_files = [f for f in files if self.is_supported_format(f)]
+            if verbose: 
+                print(f"Found {len(supported_files)} supported files\n")
+            
+            # Load each file 
+            documents = []
+            for file_path in supported_files:
+                doc = self.load_single_file(str(file_path), verbose=verbose)
+                if doc:
+                    documents.append(doc)
+            
+            if verbose:
+                print("\n" + "=" * 70)
+                print(f"Ingestion Summary:")
+                print(f"Total files found: {self.stats['total_files_found']}")
+                print(f"Successfully processed: {self.stats['files_processed']}")
+                print(f"Failed: {self.stats['files_failed']}")
+                print(f"Total size: {round(self.stats['total_size_bytes'] / 1024, 2)} KB")
+                print("=" * 70)
+
+            return documents
+
+        except Exception as e:
+            if verbose:
+                print(f"Error scanning directory: {str(e)}")
+            return []
+
         
-
-
     
