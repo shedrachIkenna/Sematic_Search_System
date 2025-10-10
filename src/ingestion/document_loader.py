@@ -183,6 +183,37 @@ class DocumentIngestion:
             print(f"  Failed to decode file with any encoding")
         return None 
     
-    
+    def _read_pdf(self, file_path: Path, verbose: bool = True) -> Optional[str]:
+        """
+        Extract text from PDF files using multiple fallback methods 
+
+        Args: 
+            file_path: Path to the PDF file 
+            verbose: If True, print status message 
+        
+        Returns: 
+            str: Extracted text or None if failed 
+        """
+
+        # Method 1 - PyMuPDF (fitz) 
+        try: 
+            import fitz
+            doc = fitz.open(str(file_path))
+            text = ""
+            for page_num, page in enumerate(doc):
+                text += page.get_text()
+            doc.close()
+
+            if text.strip():
+                return text
+        except ImportError:
+            pass
+        except Exception as e:
+            if verbose: 
+                print(f" PyMuPDF failed: {str(e)}")
+        
+
+        
+
 
     
