@@ -342,5 +342,37 @@ class DocumentIngestion:
                 print(f"Error scanning directory: {str(e)}")
             return []
 
+    def load_multiple_files(self, file_paths: List[str], verbose: bool = True, ) -> List[Dict[str, Any]]:
+        """
+        Load multiple specific files 
+
+        Args: 
+            file_paths: List of file paths to load 
+            verbose: if True, print status message 
         
+        Returns: 
+            List of document directories with content and metadata 
+        """
+
+        if verbose:
+            print(f"\nLoading {len(file_paths)} files...")
+            print("-" * 70)
+
+        documents = []
+        for file_path in file_paths:
+            doc = self.load_single_file(file_path, verbose=verbose)
+            if doc:
+                documents.append(doc)
+        
+        if verbose:
+            print("\n" + "=" * 70)
+            print(f"Ingestion Summary:")
+            print(f" Requested files: {len(file_paths)}")
+            print(f" Successfully processed: {self.stats['files_processed']}")
+            print(f" Failed: {self.stats['files_failed']}")
+            print("=" * 70)
+
+        return documents
+    
+    
     
