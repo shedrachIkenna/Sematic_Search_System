@@ -247,6 +247,18 @@ class DocumentIngestion:
         except Exception as e:
             if verbose:
                 print(f"pdfplumber failed: {str(e)}")
+    
+        # Method 4: pdfminer
+        try:
+            from pdfminer.high_level import extract_text
+            text = extract_text(str(file_path))
+            if text.strip():
+                return text
+        except ImportError:
+            pass
+        except Exception as e:
+            if verbose:
+                print(f"pdfminer failed: {str(e)}")
         
 
 
