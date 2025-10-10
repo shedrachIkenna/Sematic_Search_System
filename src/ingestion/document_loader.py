@@ -259,6 +259,15 @@ class DocumentIngestion:
         except Exception as e:
             if verbose:
                 print(f"pdfminer failed: {str(e)}")
+
+        if verbose: 
+            print(f"No PDF libraries available. Install one of:")
+            print(f"pip install pymupdf")
+            print(f"pip install PyPDF2")
+            print(f"pip install pdfplumber")
+            print(f"pip install pdfminer.six")
+        
+        return None 
         
 
 
