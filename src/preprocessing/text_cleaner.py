@@ -213,4 +213,23 @@ class TextPreprocessor:
             """
             return self.special_chars_pattern.sub(' ', text)
         
-        
+        def _remove_extra_whitespace(self, text: str) -> str:
+            """
+            Removes extra spaces and line breaks 
+
+            Args:
+                text: Input text 
+            
+            Returns: 
+                Cleaned text 
+            """
+            # Replace muiltiple newlines with double newline (paragraph seperation)
+            text = self.multi_newline_pattern.sub('\n\n', text)
+            
+            # Replace multiple spaces with single space
+            text = self.multi_space_pattern.sub(' ', text)
+            
+            # Clean up spaces around newlines
+            text = re.sub(r' *\n *', '\n', text)
+            
+            return text
