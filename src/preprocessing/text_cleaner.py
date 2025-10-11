@@ -197,6 +197,20 @@ class TextPreprocessor:
                 Tuple of (cleaned_text, count_of_emails_removed)
             """
 
-            emails_found = self.emai_pattern.findall(text)
+            emails_found = self.email_pattern.findall(text)
             cleaned_text = self.email_pattern.sub(' ', text)
             return cleaned_text, len(emails_found)
+        
+        def _clean_special_chars(self, text: str) -> str:
+            """
+            Replace special whitespace characters with regular spaces 
+
+            Args: 
+                text: Input text 
+            
+            Returns: 
+                Cleaned text 
+            """
+            return self.special_chars_pattern.sub(' ', text)
+        
+        
