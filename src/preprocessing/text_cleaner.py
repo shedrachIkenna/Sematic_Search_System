@@ -1,5 +1,7 @@
 import re 
 from typing import List, Dict, Optional, Any 
+import unicodedata
+
 
 class TextPreprocessor:
     """
@@ -156,3 +158,16 @@ class TextPreprocessor:
                     'cleaning_steps': cleaning_steps
                 }
             }
+
+        def _normalize_unicode(self, text: str) -> str:
+            """
+            Normalize Unicode characters using NFC normalization 
+            Converts characters to their canonical composed form 
+
+            Args: 
+                text: Input text
+            
+            Returns:
+                Normalized text 
+            """
+            return unicodedata.normalize('NFC', text)
