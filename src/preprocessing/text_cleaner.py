@@ -185,3 +185,18 @@ class TextPreprocessor:
             urls_found = self.url_pattern.findall(text)
             cleaned_text = self.url_pattern.sub(' ', text)
             return cleaned_text, len(urls_found)
+        
+        def _remove_emails(self, text: str) -> tuple:
+            """
+            Remove email addresses from text 
+
+            Args:
+                text: Input text
+            
+            Returns: 
+                Tuple of (cleaned_text, count_of_emails_removed)
+            """
+
+            emails_found = self.emai_pattern.findall(text)
+            cleaned_text = self.email_pattern.sub(' ', text)
+            return cleaned_text, len(emails_found)
