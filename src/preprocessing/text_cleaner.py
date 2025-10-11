@@ -171,3 +171,17 @@ class TextPreprocessor:
                 Normalized text 
             """
             return unicodedata.normalize('NFC', text)
+
+        def _remove_urls(self, text:str) -> tuple:
+            """
+            Remove Urls from text
+
+            Args:
+                text: Input text
+            
+            Returns: 
+                Tuple of (cleaned_text, count_of_urls_removed)
+            """  
+            urls_found = self.url_pattern.findall(text)
+            cleaned_text = self.url_pattern.sub(' ', text)
+            return cleaned_text, len(urls_found)
