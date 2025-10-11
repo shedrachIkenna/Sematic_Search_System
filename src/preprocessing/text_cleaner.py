@@ -269,4 +269,42 @@ class TextPreprocessor:
 
             return results
         
-        
+        def extract_metadata(self, text: str) -> Dict[str, Any]:
+            """
+            Extract metadata about the text without modifying it
+
+            Args: 
+                text: Input text
+            
+            Returns: 
+                Dictionary of metadata 
+            """
+
+            # Count different types of content 
+            urls = self.url_pattern.findall(text)
+            emails = self.email_pattern.findall(text)
+
+            # Count lines and paragraph
+            lines = text.split('\n')
+            paragraphs = [p for p in text.split('\n\n') if p.strip()]
+
+            # Count words 
+            words = text.split()
+
+            # Character type analysis
+            alpha_chars = sum(c.isalpha() for c in text)
+            digit_chars = sum(c.isdigit() for c in text)
+            space_chars = sum(c.isspace() for c in text)
+
+            return {
+            'total_chars': len(text),
+            'total_words': len(words),
+            'total_lines': len(lines),
+            'total_paragraphs': len(paragraphs),
+            'url_count': len(urls),
+            'email_count': len(emails),
+            'alpha_chars': alpha_chars,
+            'digit_chars': digit_chars,
+            'space_chars': space_chars,
+            'avg_word_length': round(sum(len(w) for w in words) / len(words), 2) if words else 0
+        }
