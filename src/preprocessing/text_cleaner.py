@@ -225,7 +225,7 @@ class TextPreprocessor:
             """
             # Replace muiltiple newlines with double newline (paragraph seperation)
             text = self.multi_newline_pattern.sub('\n\n', text)
-            
+
             # Replace multiple spaces with single space
             text = self.multi_space_pattern.sub(' ', text)
             
@@ -233,3 +233,40 @@ class TextPreprocessor:
             text = re.sub(r' *\n *', '\n', text)
             
             return text
+        
+        def preprocess_batch(self, texts: List[str], verbose: bool = False) -> List[Dict[str, Any]]:
+            """
+            Preprocess multiple texts in batch 
+
+            Args: 
+                texts: List of raw texts 
+                verbose: If True, print processing steps 
+            
+            Returns: 
+                List of preprocessed text dictionaries 
+            """
+            results = []
+
+            if verbose: 
+                print(f"Preprocessing {len(texts)} texts...")
+                print("-" * 70)
+            
+            for i, text in enumerate(texts):
+                if verbose:
+                    print(f"\nText {i+1}/{len(texts)}:")
+                
+                result = self.preprocess(text, verbose=verbose)
+                if result:
+                    results.append(result)
+            
+            if verbose:
+                print("\n" + "=" * 70)
+                print(f"Batch Preprocessing Summary:")
+                print(f" Input texts: {len(texts)}")
+                print(f" Successfully processed: {len(results)}")
+                print(f" Rejected: {len(texts) - len(results)}")
+                print("=" * 70)
+
+            return results
+        
+        
