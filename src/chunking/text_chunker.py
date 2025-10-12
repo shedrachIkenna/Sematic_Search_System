@@ -38,4 +38,20 @@ class TextChunker:
             respect_sentence_boundary: Try to break at sentence boundaries 
         """
 
+        self.chunk_size = chunk_size
+        self.chunk_overlap = chunk_overlap
+        self.strategy = strategy
+        self.min_chunk_size = min_chunk_size
+        self.respect_sentence_boundary = respect_sentence_boundary
+
+        self._compile_patterns()
+
+        # Statistics 
+        self.stats = {
+            'texts_chunked': 0,
+            'total_chunks_created': 0,
+            'avg_chunk_size': 0,
+            'avg_chunks_per_text': 0
+        }
+
         
