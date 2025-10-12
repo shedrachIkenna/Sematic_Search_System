@@ -4,6 +4,7 @@ Breaking text into optimal segments for embedding
 """
 
 from enum import Enum 
+import re 
 
 class ChunkingStrategy(Enum):
     """DIfferent strategies for chunking text"""
@@ -53,5 +54,19 @@ class TextChunker:
             'avg_chunk_size': 0,
             'avg_chunks_per_text': 0
         }
+
+    def _compile_patterns(self):
+        """Compile regex patterns for text analysis"""
+
+        # Sentence endings (Period, question mark, exclamation)
+        self.sentence_pattern = re.compile(r'[.!?]+[\s\n]+')
+
+        # Paragraphs breaks (double newline)
+        self.paragraph_pattern = re.compile(r'\n\n+')
+
+        # Common abbreviations that shouldn't be treated as sentence endings 
+        self.abbreviations = re.compile(
+            r'\b(?:Mr|Mrs|Ms|Dr|Prof|Sr|Jr|vs|etc|Inc|Ltd|Co|Corp)\.'
+        )
 
         
