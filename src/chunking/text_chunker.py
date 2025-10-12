@@ -5,6 +5,7 @@ Breaking text into optimal segments for embedding
 
 from enum import Enum 
 import re 
+from typing import Optional, Dict, List, Any
 
 class ChunkingStrategy(Enum):
     """DIfferent strategies for chunking text"""
@@ -68,5 +69,87 @@ class TextChunker:
         self.abbreviations = re.compile(
             r'\b(?:Mr|Mrs|Ms|Dr|Prof|Sr|Jr|vs|etc|Inc|Ltd|Co|Corp)\.'
         )
+    
+    def chunk(self, text: str, metadata: Optional[Dict[str, Any]] = None, verbose: bool = False) -> List[Dict[str, Any]]:
+        """
+        Main chunking function that applies the selected strategy 
 
+        Args:
+            text: Input text to chunk 
+            metadata: Optional metadata to attach to each chunk 
+            verbose: If True, print processing information 
         
+        Returns: 
+            List of chunk dictionaries with content and metadata 
+        """
+
+        if not text or not isinstance(text, str):
+            if verbose: 
+                print("Invalid input: text is empty or a string")
+            return []
+        
+        # Remove whitespace 
+        text = text.strip()
+        
+        # Check if text length is less that minimun chunk size 
+        if len(text) < self.min_chunk_size:
+            if verbose: 
+                print(f"Text too short: {len(text)} chars (min: {self.min_chunk_size})")
+            return []
+        
+        # Select chunking strategy
+        if self.strategy == ChunkingStrategy.FIXED_SIZE:
+            chunks = self._chunk_fixed_size(text)
+        elif self.strategy == ChunkingStrategy.SENTENCE:
+            chunks = self._chunk_by_sentence(text)
+        elif self.strategy == ChunkingStrategy.PARAGRAPH:
+            chunks = self._chunk_by_paragraph(text)
+        elif self.strategy == ChunkingStrategy.SEMANTIC:
+            chunks = self._chunk_semantic(text)
+        elif self.strategy == ChunkingStrategy.RECURSIVE:
+            chunks = self._chunk_recursive(text)
+        else:
+            chunks = self._chunk_fixed_size(text)
+
+        # Filter out chunks that are too small
+        chunks = [c for c in chunks if len(c) >= self.min_chunk_size]
+
+        # Build chunk dictionaries with metadata 
+        chunk_dicts = []
+        for i, chunk_text in enumerate(chunks):
+            chunk_dict = {
+                'text': chunk_text,
+                'chunk_index': i,
+                'chunk_size': len(chunk_text),
+                'total_chunks': len(chunks),
+                'strategy': self.strategy.value
+            }
+
+            # Add original metadata if provided 
+            if metadata:
+                chunk_dict['source_metadata'] = metadata.copy()
+
+            chunk_dicts.append(chunk_dict)
+
+        # Update statistics 
+        self.stats['texts_chunked'] += 1
+        self.stats['total_chunks_created'] += len(chunk_dicts)
+
+        # Calculate running averages 
+        n = self.stats['texts_chunked']
+        total_chunks = self.stats['total_chunks_created']
+
+        self.stats['avg_chunks_per_text'] = total_chunks / n if n > 0 else 0 
+
+        if chunk_dicts:
+            avg_size = sum(c['chunk_size'] for c in chunk_dicts) / len(chunk_dicts)
+            self.stats['avg_chunk_size'] = (
+                (self.stats['avg_chunk_size'] * (n - 1) + avg_size) / n
+            )
+        if verbose:
+            print(f"Created {len(chunk_dicts)} chunks using {self.strategy.value} strategy")
+            print(f"Avg chunk size: {int(self.stats['avg_chunk_size'])} chars")
+
+        return chunk_dicts
+    
+    
