@@ -152,4 +152,26 @@ class TextChunker:
 
         return chunk_dicts
     
-    
+    def _chunk_fixed_size(self, text: str) -> List[str]:
+        """
+        Chunk text into fixed-size pieces with overlap 
+        Respect sentence boundaries if enabled 
+
+        Args: 
+            text: Input text 
+        
+        Returns: 
+            List of text chunks 
+        """
+        if len(text) <= self.chunk_size:
+            return [text]
+        
+        chunk = []
+        start = 0 
+
+        while start < len(text):
+            # Calculate end position of chunk
+            end = start + self.chunk_size
+
+            
+
