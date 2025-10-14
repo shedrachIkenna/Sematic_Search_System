@@ -205,8 +205,14 @@ class TextChunker:
                 chunks.append(chunk)
             
             # Move start position to overlap position 
-            start = actual_end - self.chunk_overlap
+            next_start = actual_end - self.chunk_overlap
 
+            # Ensure we make progress: We aren't stuck in an infinity loop 
+            if next_start <= start:
+                # We are stuck at the same previous start position. 
+                next_start = actual_end # move start to actual end to force progress
             
-
+            start = next_start # set next_start to start 
+            
+        return chunks 
 
