@@ -166,12 +166,47 @@ class TextChunker:
         if len(text) <= self.chunk_size:
             return [text]
         
-        chunk = []
+        chunks = []
         start = 0 
 
         while start < len(text):
             # Calculate end position of chunk
             end = start + self.chunk_size
 
+            # If we are at the end already, take the whole text 
+            if end >= len(text):
+                chunk = text[start:].strip()
+                if chunk:
+                    chunks.append(chunk)
+                break
+
+            # Try to break at sentence boundary if enabled 
+            if self.respect_sentence_boundary:
+                # Look for sentence ending between start and end of the chunk 
+                search_text = text[start:end]
+                sentence_matches = list(self.sentence_pattern.finditer(search_text))
+
+                if sentence_matches:
+                    # Select and use last sentence ending found 
+                    last_match = sentence_matches[-1]
+                    actual_end = start + last_match.end()
+                
+                else: 
+                    # No sentence end found within the chunk, try to break at word boundary 
+                    actual_end = self._find_word_boundary(text, start, end)
             
+            else:
+                # No sentence end found and could not break at word boundary 
+                actual_end = end 
+
+            # Extract chunk
+            chunk = text[start:actual_end].strip()
+            if chunk: 
+                chunks.append(chunk)
+            
+            # Move start position to overlap position 
+            start = actual_end - self.chunk_overlap
+
+            
+
 
