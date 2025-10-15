@@ -246,3 +246,29 @@ class TextChunker:
                 if chunk_text: 
                     chunks.append(chunk_text)
 
+                # Handle overlap by keeping last 1 or 2 sentences 
+                if self.chunk_overlap > 0 and len(current_chunk) > 1:
+                    overlap_text = ' '.join(current_chunk[-2:]) # get last two items(sentences) in current_chunk list 
+                    if len(overlap_text) <= self.chunk_overlap:
+                        current_chunk = current_chunk[-2:]
+                        current_size = len(overlap_text)
+                    else:
+                        current_chunk = current_chunk[-1:]
+                        current_size = len(current_chunk[0])
+                
+                else:
+                    current_chunk = []
+                    current_size = 0
+            
+            current_chunk.append(sentence)
+            current_size += sentence_size + 1  # +1 for space
+
+        # Add remaining chunk
+        if current_chunk:
+            chunk_text = ' '.join(current_chunk).strip()
+            if chunk_text:
+                chunks.append(chunk_text)
+        
+        return chunks
+        
+
