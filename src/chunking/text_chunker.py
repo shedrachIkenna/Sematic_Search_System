@@ -215,4 +215,24 @@ class TextChunker:
             start = next_start # set next_start to start 
             
         return chunks 
+    
+    def _chunk_by_sentence(self, text: str) -> List[str]:
+        """
+        Chunk text by grouping sentences until they reach chunk_size 
+
+        Args: 
+            text: Input text 
+        
+        Returns: 
+            List of text chunks 
+        """
+
+        sentences = self._split_sentences(text)
+
+        if not sentences: 
+            return [text]
+        
+        chunks = []
+        current_chunk = []
+        current_size = 0
 
