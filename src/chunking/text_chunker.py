@@ -236,3 +236,13 @@ class TextChunker:
         current_chunk = []
         current_size = 0
 
+        for sentence in sentences:
+            sentence_size = len(sentence)
+
+            # If adding current iter sentence exceed chunk_size, start new chunk 
+            if current_size + sentence_size > self.chunk_size and current_chunk:
+                # Add current chunk 
+                chunk_text = ' '.join(current_chunk).strip()
+                if chunk_text: 
+                    chunks.append(chunk_text)
+
