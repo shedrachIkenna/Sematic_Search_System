@@ -270,5 +270,8 @@ class TextChunker:
                 chunks.append(chunk_text)
         
         return chunks
+    
+    def _chunk_by_paragraph(self, text: str) -> List[str]:
+        
         
 
