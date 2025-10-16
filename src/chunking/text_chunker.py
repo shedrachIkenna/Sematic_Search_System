@@ -281,6 +281,10 @@ class TextChunker:
         Returns: 
             List of text chunks 
         """
-        
+
+        # Split by paragraphs
+        paragraphs = self.paragraph_pattern.split(text)
+        paragraphs = [p.strip() for p in paragraphs if p.strip()]
+
         
 
