@@ -272,6 +272,15 @@ class TextChunker:
         return chunks
     
     def _chunk_by_paragraph(self, text: str) -> List[str]:
+        """
+        Chunk text by paragraph, combining small ones 
+
+        Args: 
+            text: Input text 
+        
+        Returns: 
+            List of text chunks 
+        """
         
         
 
