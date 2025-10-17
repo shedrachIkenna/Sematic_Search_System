@@ -341,4 +341,15 @@ class TextChunker:
                 chunks.append(chunk_text)
 
         return chunks   
+    
+    def _chunk_semantic(self, text: str) -> List[str]:
+        """
+        Chunk text based on semantic boundaries (paragrapshs + sentences)
+
+        Args: 
+            text: Input text 
+        
+        Returns: 
+            List of text chunks 
+        """
 
