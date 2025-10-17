@@ -310,9 +310,35 @@ class TextChunker:
                 sub_chunks = self._chunk_fixed_size(para)
                 chunks.extend(sub_chunks)
                 continue
+            
+            # if add a paragraph exceeds chunk_size, start a new chunk 
+            if current_size + para_size > self.chunk_size and current_chunk:
+                chunk_text = '\n\n'.join(current_chunk).strip()
+                if chunk_text:
+                    chunks.append(chunk_text)
+                
+                # Handle Overlap 
+                if self.chunk_overlap > 0 and current_chunk:
+                    last_para = current_chunk[:1]   
+                    if len(last_para) <= self.chunk_overlap:
+                        current_chunk = [last_para]
+                        current_size = len(last_para) 
+                    else:
+                        current_chunk = []
+                        current_size = 0
+
+                else: 
+                    current_chunk = []
+                    current_size = 0 
 
             current_chunk.append(para)
-            current_size += para_size + 2 # +2 for \n\n
+            current_size += para_size + 2  # +2 for \n\n
 
-        
+        # Add remaining chunk 
+        if current_chunk:
+            chunk_text = '\n\n'.join(current_chunk).strip()
+            if chunk_text:
+                chunks.append(chunk_text)
+
+        return chunks   
 
