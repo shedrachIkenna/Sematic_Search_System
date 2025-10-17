@@ -286,5 +286,33 @@ class TextChunker:
         paragraphs = self.paragraph_pattern.split(text)
         paragraphs = [p.strip() for p in paragraphs if p.strip()]
 
+        if not paragraphs:
+            return [text]
+        
+        chunks = [] 
+        current_chunk = []
+        current_size = 0
+
+        for para in paragraphs:
+            para_size = len(para)
+
+            # If a single paragraph exceeds the chunk_size, split it 
+            if para_size > self.chunk_size:
+                # Save current chunk if exists 
+                if current_chunk:
+                    chunk_text = '\n\n'.join(current_chunk).strip()
+                    if chunk_text:
+                        chunks.append(chunk_text)
+                    current_chunk = []
+                    current_size = 0 
+                
+                # Split large paragraph using fixed size strategy 
+                sub_chunks = self._chunk_fixed_size(para)
+                chunks.extend(sub_chunks)
+                continue
+
+            current_chunk.append(para)
+            current_size += para_size + 2 # +2 for \n\n
+
         
 
