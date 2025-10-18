@@ -353,3 +353,13 @@ class TextChunker:
             List of text chunks 
         """
 
+        # Try paragraph based chunking first 
+        paragraphs = self.paragraph_pattern.split(text)
+        paragraphs = [p.strip() for p in paragraphs if p.strip()]
+
+        if len(paragraphs) <= 1:
+            # This means no paragraph. Fall back to sentence chunking 
+            return self._chunk_by_sentence(text)
+        
+        # Otherwise, use paragraph chunking 
+        return self._chunk_by_paragraph(text)
