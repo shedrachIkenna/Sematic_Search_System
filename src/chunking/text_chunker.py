@@ -363,3 +363,7 @@ class TextChunker:
         
         # Otherwise, use paragraph chunking 
         return self._chunk_by_paragraph(text)
+
+    def _chunk_recursive(self, text: str) -> List[str]:
+                  
+    
