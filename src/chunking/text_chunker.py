@@ -365,5 +365,14 @@ class TextChunker:
         return self._chunk_by_paragraph(text)
 
     def _chunk_recursive(self, text: str) -> List[str]:
+        """
+        Recursive chunking with multiple fallback strategies 
+
+        Args: 
+            text: Input text 
+        
+        Returns: 
+            List of text chunks 
+        """
                   
     
