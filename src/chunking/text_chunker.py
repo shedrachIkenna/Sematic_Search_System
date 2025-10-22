@@ -366,13 +366,177 @@ class TextChunker:
 
     def _chunk_recursive(self, text: str) -> List[str]:
         """
-        Recursive chunking with multiple fallback strategies 
-
-        Args: 
-            text: Input text 
+        Recursive chunking with multiple fallback strategies
         
-        Returns: 
-            List of text chunks 
+        Args:
+            text: Input text
+            
+        Returns:
+            List of text chunks
         """
-                  
+        # Try paragraph first
+        if '\n\n' in text:
+            chunks = self._chunk_by_paragraph(text)
+            if all(len(c) <= self.chunk_size * 1.2 for c in chunks):  # Allow 20% tolerance
+                return chunks
+        
+        # Try sentence-based
+        sentences = self._split_sentences(text)
+        if len(sentences) > 1:
+            chunks = self._chunk_by_sentence(text)
+            if all(len(c) <= self.chunk_size * 1.2 for c in chunks):
+                return chunks
+        
+        # Fall back to fixed size
+        return self._chunk_fixed_size(text)
     
+    def _split_sentences(self, text: str) -> List[str]:
+        """
+        Split text into sentences, handling common abbreviations
+        
+        Args:
+            text: Input text
+            
+        Returns:
+            List of sentences
+        """
+        # Replace abbreviations temporarily to avoid false sentence splits
+        protected_text = self.abbreviations.sub(lambda m: m.group().replace('.', '<DOT>'), text)
+        
+        # Split by sentence endings
+        sentences = self.sentence_pattern.split(protected_text)
+        
+        # Restore abbreviations and clean up
+        sentences = [s.replace('<DOT>', '.').strip() for s in sentences if s.strip()]
+        
+        return sentences
+    
+    def _find_word_boundary(self, text: str, start: int, end: int) -> int:
+        """
+        Find nearest word boundary before end position
+        
+        Args:
+            text: Full text
+            start: Start position
+            end: Desired end position
+            
+        Returns:
+            Adjusted end position at word boundary
+        """
+        # Look backwards from end to find a space
+        search_start = max(start, end - 100)  # Don't look too far back
+        search_text = text[search_start:end]
+        
+        # Find last space
+        last_space = search_text.rfind(' ')
+        
+        if last_space != -1:
+            return search_start + last_space + 1
+        
+        # No space found, return original end
+        return end
+    
+    def chunk_batch(self, texts: List[str], metadata_list: Optional[List[Dict[str, Any]]] = None, 
+                   verbose: bool = False) -> List[List[Dict[str, Any]]]:
+        """
+        Chunk multiple texts in batch
+        
+        Args:
+            texts: List of texts to chunk
+            metadata_list: Optional list of metadata dictionaries (one per text)
+            verbose: If True, print processing information
+            
+        Returns:
+            List of chunk lists (one list per input text)
+        """
+        if verbose:
+            print(f"\n📝 Chunking {len(texts)} texts...")
+            print("-" * 70)
+        
+        results = []
+        
+        for i, text in enumerate(texts):
+            metadata = metadata_list[i] if metadata_list and i < len(metadata_list) else None
+            
+            if verbose:
+                print(f"\nText {i+1}/{len(texts)}:")
+            
+            chunks = self.chunk(text, metadata=metadata, verbose=verbose)
+            results.append(chunks)
+        
+        if verbose:
+            total_chunks = sum(len(r) for r in results)
+            print("\n" + "=" * 70)
+            print(f"📊 Batch Chunking Summary:")
+            print(f"   Input texts: {len(texts)}")
+            print(f"   Total chunks: {total_chunks}")
+            print(f"   Avg chunks per text: {total_chunks / len(texts):.1f}")
+            print("=" * 70)
+        
+        return results
+    
+    def get_chunk_preview(self, text: str, num_chunks: int = 3) -> List[Dict[str, Any]]:
+        """
+        Get a preview of how text will be chunked
+        
+        Args:
+            text: Input text
+            num_chunks: Number of chunks to preview
+            
+        Returns:
+            List of first N chunks with preview information
+        """
+        chunks = self.chunk(text, verbose=False)
+        preview_chunks = chunks[:num_chunks]
+        
+        for chunk in preview_chunks:
+            # Add preview (first 100 chars)
+            chunk['preview'] = chunk['text'][:100] + "..." if len(chunk['text']) > 100 else chunk['text']
+        
+        return preview_chunks
+    
+    def estimate_chunks(self, text: str) -> Dict[str, Any]:
+        """
+        Estimate chunking statistics without actually chunking
+        
+        Args:
+            text: Input text
+            
+        Returns:
+            Dictionary with estimation statistics
+        """
+        text_length = len(text)
+        
+        # Estimate number of chunks
+        if text_length <= self.chunk_size:
+            estimated_chunks = 1
+        else:
+            # Account for overlap
+            effective_chunk_size = self.chunk_size - self.chunk_overlap
+            estimated_chunks = max(1, (text_length - self.chunk_overlap) // effective_chunk_size + 1)
+        
+        # Estimate average chunk size
+        estimated_avg_size = min(self.chunk_size, text_length // estimated_chunks if estimated_chunks > 0 else text_length)
+        
+        return {
+            'text_length': text_length,
+            'estimated_chunks': estimated_chunks,
+            'estimated_avg_chunk_size': estimated_avg_size,
+            'chunk_size_setting': self.chunk_size,
+            'chunk_overlap_setting': self.chunk_overlap,
+            'strategy': self.strategy.value
+        }
+    
+    def get_statistics(self) -> Dict[str, Any]:
+        """Get chunking statistics"""
+        return self.stats.copy()
+    
+    def reset_statistics(self):
+        """Reset statistics counters"""
+        self.stats = {
+            'texts_chunked': 0,
+            'total_chunks_created': 0,
+            'avg_chunk_size': 0,
+            'avg_chunks_per_text': 0
+        }
+
